@@ -454,7 +454,7 @@ class ResetPassword(View):
             'Reset password',
             'New password for {} is {}'.format(user.username, password),
             'no-reply@scoruja.pw',
-            ['strigocoruja@ya.ru'],
+            [user.email],
             fail_silently=False,
         )
         return render(request, 'blog/reset_password.html',
