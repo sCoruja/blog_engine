@@ -1,0 +1,22 @@
+{% load staticfiles %}
+<div class="sidebar-box" id="user-info-box">
+    <div class="bio text-center">
+        <div class="bio-body" id="user-info-buttons">
+            <form action="{% url 'login' %}" method="post" onsubmit="this.from_url.value = window.location; return true;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="login">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="password">
+                </div>
+                <input type="hidden" id="from_url" name="from_url">
+                <input type="submit" class="btn btn-primary btn-sm" value="Sign in">
+            </form>
+             <a href="{% url 'reset' %}" class="">Forgot password?</a>
+            <hr>
+            <p>Don't have account?</p>
+            <a href="{% url 'register' %}" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+    </div>
+</div>

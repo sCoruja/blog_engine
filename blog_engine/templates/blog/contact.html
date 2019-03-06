@@ -1,0 +1,29 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block main_content_header %}
+    <div class="col-md-12 pb-5 px-0 mx-0">
+        <h1>Contact</h1>
+    </div>
+{% endblock %}
+{% block content %}
+
+    <div class="col-md-12 col-lg-8 main-content">
+        <form action="" method="post">
+            {% csrf_token %}
+            <p class="text-primary">{{ status }}</p>
+            <div class="row">
+                {% for field in form %}
+                    <div class="col-md-12 form-group">
+                        <label for="{{ field.name }}">{{ field.label }}</label>
+
+                        {{ field }}
+                    </div>
+                {% endfor %}
+
+                <div class="col-md-6 form-group">
+                    <input type="submit" value="Send Message" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

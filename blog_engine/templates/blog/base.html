@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block body %}
+    {% block pinned %}
+    {% endblock %}
+
+
+    <section class="site-section py-sm">
+
+        <div class="container">
+
+            <div class="row">
+                   {% block main_content_header %}{% endblock %}
+            </div>
+
+            <div class="row blog-entries">
+
+                {% block content %}
+                {% endblock %}
+
+                <!-- sidebar -->
+                <div class="col-md-12 col-lg-4 sidebar">
+
+                    <!-- END search -->
+                    <!-- END search -->
+
+                    <!-- END user-panel -->
+
+                    <div id="user-info">
+
+                    </div>
+                    <!-- END user-panel -->
+
+                    <!-- END popular-posts -->
+                    <div class="sidebar-box" id="popular-posts-box">
+                        <h3 class="heading">Popular Posts</h3>
+                        <div class="post-entry-sidebar">
+                            <ul id="popular-posts-list"></ul>
+                        </div>
+                    </div>
+                    <!-- END popular-posts -->
+
+                    <!-- END categories -->
+                    <div class="sidebar-box" id="categories-box">
+                        <h3 class="heading">Categories</h3>
+                        <ul class="categories" id="categories-list">
+                        </ul>
+                    </div>
+                    <!-- END categories -->
+
+                    <!-- END tags -->
+                    <div class="sidebar-box" id="tags-box">
+                        <h3 class="heading">Tags</h3>
+                        <ul class="tags" id="tags-list"></ul>
+                    </div>
+                    <!-- END tags -->
+                </div>
+                <!-- END sidebar -->
+
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $.ajax({
+            url: '{%  url 'tags_list' %}',
+            success: function (data) {
+                if (data.status == 'OK') {
+                    $.each(data.data, function (i, v) {
+                        $('#tags-list').append('<li><a href="' + v.url + '">' + v.title + '</a></li>');
+                    })
+                } else {
+                    $('#tags-box').hide();
+                }
+            }
+
+        });
+        $.ajax({
+            url: '{%  url 'categories_list' %}',
+            success: function (data) {
+                if (data.status == 'OK') {
+                    $.each(data.data, function (i, v) {
+                        $('#categories-list').append('<li><a href="' + v.url + '">' + v.title + ' <span>(' + v.posts_count + ')</span></a></li>');
+                    })
+                } else {
+                    $('#categories-box').hide();
+                }
+            }
+
+        });
+        $.ajax({
+            url: '{%  url 'popular_posts' %}',
+            success: function (data) {
+                if (data.status == 'OK') {
+                    $.each(data.data, function (i, v) {
+                        $('#popular-posts-list')
+                            .append('<li>\n' +
+                                '                                    <a href="' + v.url + '">\n' +
+                                '                                        <img src="/' + v.image + '" alt="Image placeholder" class="mr-4">\n' +
+                                '                                        <div class="text">\n' +
+                                '                                            <h4>' + v.title + '</h4>\n' +
+                                '                                            <div class="post-meta">\n' +
+                                '                                                <span class="mr-2">' + v.date + '</span>\n' +
+                                '                                            </div>\n' +
+                                '                                        </div>\n' +
+                                '                                    </a>\n' +
+                                '                                </li>');
+                    })
+                } else {
+                    $('#popular-posts-box').hide();
+                }
+            }
+
+        });
+        $('#user-info').load('{% url 'user_info' %}');
+    </script>
+{% endblock %}

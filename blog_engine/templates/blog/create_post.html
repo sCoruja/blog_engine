@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+{% load staticfiles %}
+{% block main_content_header %}
+    <div class="col-md-6">
+        <h2 class="mb-4 mt-3">Create post</h2>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="col-md-12 col-lg-8 main-content">
+        <form action="{% url 'create_post' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class=" col-md-12 form-group">
+            </div>
+            <div class="row">
+                {% for field in form %}
+                    <div class="col-md-12 form-group">
+                        {% if not field.is_hidden %}
+                            {{ field.label }}
+                        {% endif %}
+                        {{ field }}
+                    </div>
+                {% endfor %}
+
+                <div class="col-md-12 form-group">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                    <a class="btn btn-sm btn-secondary" href="{% url 'create_category' %}">Create category</a>
+                    <a class="btn btn-sm btn-secondary" href="{% url 'create_tag' %}">Create tag</a>
+
+
+                </div>
+            </div>
+        </form>
+
+    </div>
+{% endblock %}

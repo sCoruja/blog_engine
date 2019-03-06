@@ -1,0 +1,21 @@
+{% load staticfiles %}
+<div class="sidebar-box" id="user-info-box">
+    <div class="bio text-center">
+        <img src="{% if user.image_cropped %} /{{ user.image_cropped }} {% endif %}"
+             alt="Image Placeholder"
+             onerror="this.src='/static/images/users/default-user-image.jpg'"
+             class="img-fluid">
+        <div class="bio-body" id="user-info-buttons">
+            <h2>{{ user.full_name }}</h2>
+            <p><a href="{% url 'my_account' %}" class="btn btn-primary btn-sm rounded">Profile</a></p>
+            <p><a href="/account/logout/"
+                  onclick="window.location.href = '/account/logout/' + window.location.toString(); return false;"
+                  class="btn btn-primary btn-sm rounded">Sign out</a></p>
+
+            {% if perms.blog.add_post %}
+                <hr/>
+                <p><a href="{% url 'create_post' %}" class="btn btn-primary btn-sm rounded">Create post</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>

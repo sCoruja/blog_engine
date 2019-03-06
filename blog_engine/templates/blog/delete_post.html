@@ -1,0 +1,13 @@
+{% extends 'blog/base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="col-md-12 col-lg-8 main-content">
+    <form action="{% url 'delete_post' post.slug %}" method="post" class="text-center">
+        {% csrf_token %}
+        <h3>Do you want delete post '{{ post.title }}' ?</h3>
+        <input type="submit" value="Yes" class="btn btn-primary">
+        <a href="{{ post.get_absolute_url }}" class="btn btn-primary">No</a>
+    </form>
+</div>
+{% endblock %}

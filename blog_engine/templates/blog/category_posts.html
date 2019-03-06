@@ -1,0 +1,81 @@
+{% extends 'blog/base.html' %}
+{% load staticfiles %}
+{% block main_content_header %}
+    <div class="col-md-12 pb-5 px-0 mx-0 header-wrap">
+        <img class="img-fluid mx-0 px-0" src="/{{ category.cover }}"
+             onerror="this.src='{% static 'images/categories/default-category-image.jpg' %}'"
+             style="object-fit: cover; height: 150px; width: 100%">
+        <h1>{{ category.title }}</h1>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="col-md-12 col-lg-8 main-content">
+        <div class="row mt-0">
+            <div class="col-md-12">
+                {% for post in posts.object_list %}
+                    <div class="post-entry-horzontal">
+                        <a href="{{ post.get_absolute_url }}">
+                            <div class="image element-animate" data-animate-effect="fadeIn"
+                                 style="background-image: url({% if post.cover_small %} /{{ post.cover_small.url }}
+                                 {% else %} /static/images/posts/default.jpg{% endif %});"></div>
+                            <span class="text">
+                      <div class="post-meta">
+                        <span class="author mr-2"><img
+                                src="{% if post.author.image_cropped %} /{{ post.author.image_cropped.url }}
+                                {% else %} /static/images/users/default-user-image.jpg{% endif %}"
+                                alt="Colorlib"> {{ post.author.full_name }}</span>&bullet;
+                        <span class="mr-2">{{ post.date }}</span> &bullet;
+                        <span class="mr-2">{{ post.category }}</span>
+                      </div>
+                      <h2>{{ post.title }}</h2>
+
+                    <div class="post-meta">
+                        <span class="ml-2"><span class="fa fa-comments"></span> {{ post.comments.count }}</span>
+                        <span class="ml-2"><span class="fa fa-heart"></span> {{ post.likes.count }}</span>
+                        <span class="ml-2"><span class="fa fa-eye"></span> {{ post.views }}</span>
+                      </div>
+                    </span>
+                        </a>
+                    </div>
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+        {% if posts.paginator.num_pages > 1 %}
+            <div class="row mt-5">
+                <div class="col-md-12 text-center">
+                    <nav aria-label="Page navigation" class="text-center">
+                        <ul class="pagination">
+
+                            <li class="page-item"><a class="page-link"
+                                                     href="{% url 'category_posts' slug=category.slug %}">&lt;</a></li>
+                            {% if posts.has_previous %}
+                                <li class="page-item ">
+                                    <a class="page-link"
+                                       href="{% url 'category_posts' slug=category.slug page=posts.previous_page_number %}">
+                                        {{ posts.previous_page_number }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item active"><a class="page-link" >{{ posts.number }}</a></li>
+                            {% if posts.has_next %}
+                                <li class="page-item ">
+                                    <a class="page-link"
+                                       href="{% url 'category_posts' slug=category.slug page=posts.next_page_number %}">
+                                        {{ posts.next_page_number }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="{% url 'category_posts' slug=category.slug page=posts.paginator.num_pages %}">&gt;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

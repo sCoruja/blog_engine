@@ -1,0 +1,182 @@
+{% extends 'blog/base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="col-md-12 col-lg-8 main-content">
+        <img src="/{{ post.cover_small.url }}" onerror="this.src='/static/images/posts/default.jpg'" alt="Image"
+             class="img-fluid mb-5">
+        <div class="post-meta">
+            <span class="author mr-2"><img src="/{% if post.author.image_cropped %}{{ post.author.image_cropped.url }}{% endif %}"
+                                           class="mr-2"
+                                           onerror="this.src='/static/images/users/default-user-image.jpg'">
+            <a href="{{ post.author.get_absolute_url }}">{{ post.author.full_name }}</a>
+            </span>&bullet;
+            <span class="mr-2">{{ post.date }} </span> &bullet;
+            <span class="ml-2"><span class="fa fa-comments"></span> {{ post.comments.count }}</span> &bullet;
+            <span class="ml-2"><span class="fa fa-eye"></span> {{ post.views }}</span> &bullet;
+            <span class="ml-2"><span class="fa fa-heart"></span> {{ post.likes.count }}</span>
+        </div>
+        <h1 class="mb-0">{{ post.title }}</h1>
+        <a class="category mb-5" href="{{ post.category.get_absolute_url }}">{{ post.category }}</a>
+
+        <div class="post-content-body">
+            <p>
+                {{ post.body }}
+            </p>
+        </div>
+        <hr/>
+
+        <div class="pt-0">
+            <p>Tags: {% for tag in post.tags.all %}
+                <a href="{{ tag.get_absolute_url }}">#{{ tag | lower }}</a>
+            {% endfor %}
+            </p>
+
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'like_post' post.slug %}" method="post">
+                    {% csrf_token %}
+                    {% if not is_liked %}
+                        <input type="submit" class="btn btn-primary btn-sm" value='Add to favorite'>
+                    {% else %}
+                        <input type="submit" class="btn btn-primary btn-sm" value='Remove from favorite'>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+
+
+        <div class="pt-5">
+            <h3 class="mb-5">{{ post.comments.count }} Comments</h3>
+            <ul class="comment-list">
+                {% for comment in post.comments.all %}
+                    {% if comment.replies.all.count == 0 %}
+                        <li class="comment bg-light p-3">
+                            <div class="vcard">
+                                <img src="/{% if  comment.author.image_cropped %}{{ comment.author.image_cropped.url }}{% endif %}"
+                                     onerror="this.src='/static/images/users/default-user-image.jpg'"
+                                     alt="Image placeholder">
+                            </div>
+                            <div class="comment-body">
+                                <h3><a href="{{ comment.author.get_absolute_url }}">{{ comment.author.full_name }}</a>
+                                </h3>
+                                <div class="meta">{{ comment.date }}</div>
+                                <p>{{ comment.text }}</p>
+                                <p>
+                                    <a href="#" onclick="loadReplyForm({{ comment.id }}); return false;"
+                                       class="reply rounded">Reply</a>
+                                </p>
+                            </div>
+                            <div id="comment_{{ comment.id }}">
+
+                            </div>
+                        </li>
+
+                    {% else %}
+                        <li class="comment bg-light p-3">
+
+                            <div class="vcard">
+                                <img src="/{% if  comment.author.image_cropped %}{{ comment.author.image_cropped.url }}{% endif %}"
+                                     onerror="this.src='/static/images/users/default-user-image.jpg'"
+                                     alt="Image placeholder">
+                            </div>
+                            <div class="comment-body">
+                                <h3><a href="{{ comment.author.get_absolute_url }}">{{ comment.author.full_name }}</a>
+                                </h3>
+                                <div class="meta">{{ comment.date }}</div>
+                                <p>{{ comment.text }}</p>
+                                <a href="#" class="reply rounded"
+                                   onclick="loadReplyForm({{ comment.id }}); return false;">Reply</a></p>
+                            </div>
+
+                            <ul class="children">
+                                {% for reply in comment.replies.all %}
+                                    <li class="comment">
+                                        <div class="vcard">
+                                            <img src="/{% if  reply.author.image_cropped %}{{ reply.author.image_cropped.url }}{% endif %}"
+                                                 onerror="this.src='/static/images/users/default-user-image.jpg'"
+                                                 alt="Image placeholder">
+                                        </div>
+                                        <div class="comment-body">
+                                            <h3>
+                                                <a href="{{ reply.author.get_absolute_url }}">{{ reply.author.full_name }}</a>
+                                            </h3>
+                                            <div class="meta">{{ reply.date }}</div>
+                                            <p>{{ reply.text }}</p>
+                                        </div>
+                                    </li>
+
+                                {% endfor %}
+                            </ul>
+
+                            <div id="comment_{{ comment.id }}">
+
+                            </div>
+                        </li>
+
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+            </ul>
+            <!-- END comment-list -->
+
+            <div class="comment-form-wrap pt-3" id="comment-form-wrap">
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    {% if request.user.is_authenticated %}
+        <script type="text/javascript">
+            $('#comment-form-wrap').load('{% url 'comment' post=post.id %}');
+
+            function loadReplyForm(id) {
+                if ($('#comment_' + id).children().length == 0) {
+                    $('#comment_' + id).load('{% url 'reply' %}' + id.toString());
+                } else if ($('#comment_' + id).hasClass('d-none')) {
+                    $('#comment_' + id).removeClass('d-none')
+                } else {
+                    $('#comment_' + id).addClass('d-none')
+                }
+            }
+
+        </script>
+
+        <script type="text/javascript">
+            i = setInterval(f, 1000)
+
+            function f() {
+                if ($('#user-info-buttons').length) {
+                    {% if perms.blog.add_pinnedpost %}
+                        {% if is_pinned %}
+                            $('#user-info-buttons').append('\n' +
+                                '        <form action="pin/" method="post">\n' +
+                                '            {% csrf_token %}\n' +
+                                '            <p><input class="btn btn-primary mb-3 rounded btn-sm" type="submit" value="Unpin"></p>\n' +
+                                '        </form>');
+                        {% else %}
+                            $('#user-info-buttons').append('\n' +
+                                '        <form action="pin/" method="post">\n' +
+                                '            {% csrf_token %}\n' +
+                                '            <p><input class="btn btn-primary mb-3 rounded btn-sm" type="submit" value="Pin"></p>\n' +
+                                '        </form>');
+                        {% endif %}
+                    {% endif %}
+                    {% if perms.blog.change_post %}
+                        $('#user-info-buttons').append('<p><a href="update" class="btn btn-primary btn-sm rounded">Update post</a></p>');
+                    {% endif %}
+                    {% if perms.blog.delete_post %}
+                        $('#user-info-buttons').append('<p><a href="delete" class="btn btn-primary btn-sm rounded">Delete post</a></p>');
+                    {% endif %}
+                    clearInterval(i);
+                }
+            }
+        </script>
+
+    {% endif %}
+{% endblock %}

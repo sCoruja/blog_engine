@@ -1,0 +1,12 @@
+<h3 class="mb-5">Leave a comment</h3>
+<form action="{% url 'comment' %}" method="post" class="p-5 bg-light">
+    {% csrf_token %}
+    <input type="hidden" name="post" value="{{ post }}" id="id_post">
+    <input type="hidden" name="author" value="{{ author }}" id="id_author">
+    <div class="form-group">
+        <textarea name="text" id="id_text" cols="30" rows="5" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Post Comment" class="btn btn-primary">
+    </div>
+</form>

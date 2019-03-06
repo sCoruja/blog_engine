@@ -1,0 +1,11 @@
+<form action="{% url 'reply' %}" method="post" class="p-5 bg-light">
+    {% csrf_token %}
+    <input type="hidden" name="author" value="{{ author }}" id="id_author">
+    <input type="hidden" name="comment" value="{{ comment }}" id="id_comment">
+    <div class="form-group">
+    <textarea name="text" id="id_text" cols="30" rows="3" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Reply" class="btn btn-primary">
+    </div>
+</form>

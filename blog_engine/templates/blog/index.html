@@ -1,0 +1,137 @@
+{% extends 'blog/base.html' %}
+{% load staticfiles %}
+{% block main_content_header %}
+    <div class="col-md-6">
+        <h2 class="mb-4 mt-3">Latest Posts</h2>
+    </div>
+{% endblock %}
+
+{% block pinned %}
+    <!-- pinned -->
+    {% if pinned %}
+
+        <section class="site-section pt-5 pb-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="owl-carousel owl-theme home-slider">
+                            {% for post in pinned %}
+                                <div>
+                                    <a href="{{ post.post.get_absolute_url }}"
+                                       class="a-block d-flex align-items-center height-lg"
+                                       style="background-image: url('{% if post.post.cover_big %} /{{ post.post.cover_big.url }} {% endif %}'); ">
+                                        <div class="text half-to-full">
+                                            <span class="category mb-5">{{ post.post.category.title }}</span>
+                                            <div class="post-meta mb-2">
+
+                                        <span class="author mr-2">
+                                            <img src="{% if post.post.author.image_cropped %} {{ post.post.author.image_cropped.url }} {% endif %}"
+                                                 onerror="this.src='/static/images/users/default-user-image.jpg'"
+                                                 alt="Colorlib"/> {{ post.post.author.full_name }}</span>&bullet;
+                                                <span class="mr-2">{{ post.post.date }} </span>
+
+                                            </div>
+                                            <div class="post-meta">
+                                            <span class="mx-2">
+                                                <span class="fa fa-comments"></span> {{ post.post.comments.count }}
+                                                </span> &bullet;
+                                                <span class="mx-2">
+                                                <span class="fa fa-heart"></span> {{ post.post.likes.count }}
+                                            </span> &bullet;
+                                                <span class="mx-2">
+                                                <span class="fa fa-eye"></span> {{ post.post.views }}
+                                            </span>
+                                            </div>
+                                            <h3>{{ post.post.title }}</h3>
+                                            <p>{{ post.post.body| truncatewords:20 }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </section>
+    {% endif %}
+    <!-- END pinned -->
+{% endblock %}
+
+{% block content %}
+    <!-- main-content -->
+    <div class="col-md-12 col-lg-8 main-content" id="post-list">
+        <div class="row">
+
+            {% for post in posts.object_list %}
+                <div class="col-md-6">
+                    <a href="{{ post.get_absolute_url }}" class="blog-entry element-animate"
+                       data-animate-effect="fadeIn">
+                        <div class="post-cover">
+                            <img src="{% if post.cover_small %} /{{ post.cover_small.url }} {% endif %}"
+                                 onerror="this.src='/static/images/posts/default.jpg'" alt="Image placeholder">
+                            <h5><span class="category">{{ post.category }}</span></h5>
+                        </div>
+                        <div class="blog-content-body">
+                            <div class="post-meta">
+                                    <span class="author mr-2">
+                                        <img src="/{% if post.author.image_cropped %} {{ post.author.image_cropped.url }} {% endif %}" alt="Colorlib"
+                                             onerror="this.src='/static/images/users/default-user-image.jpg'"> {{ post.author.full_name }}</span>
+                            </div>
+                            <h2>{{ post.title }}</h2>
+                            <div class="post-meta">
+                                <span class="mr-2">{{ post.date| date }}</span> &bullet;
+                                <span class="mx-2"><span class="fa fa-comments"></span> {{ post.comments.count }}</span>
+                                &bullet;
+                                <span class="mx-2"><span class="fa fa-heart"></span> {{ post.likes.count }}</span>
+                                &bullet;
+                                <span class="mx-2"><span class="fa fa-eye"></span> {{ post.views }}</span>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+
+        </div>
+        {% if posts.paginator.num_pages > 1 %}
+
+            <!-- pagination -->
+            <div class="row mt-5">
+                <div class="col-md-12 text-center">
+                    <nav aria-label="Page navigation" class="text-center">
+                        <ul class="pagination">
+
+                            <li class="page-item"><a class="page-link" href="{% url 'index' %}">&lt;</a></li>
+                            {% if posts.has_previous %}
+                                <li class="page-item ">
+                                    <a class="page-link" href="{% url 'index' page=posts.previous_page_number %}">
+                                        {{ posts.previous_page_number }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item active"><a class="page-link">{{ posts.number }}</a></li>
+                            {% if posts.has_next %}
+                                <li class="page-item ">
+                                    <a class="page-link" href="{% url 'index' page=posts.next_page_number %}">
+                                        {{ posts.next_page_number }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li class="page-item"><a class="page-link"
+                                                     href="{% url 'index' page=posts.paginator.num_pages %}">&gt;</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- END pagination -->
+
+        {% endif %}
+    </div>
+    <!-- END main-content -->
+{% endblock %}

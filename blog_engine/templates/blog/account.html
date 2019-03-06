@@ -1,0 +1,77 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="col-md-12 col-lg-8 main-content mt-5">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="sidebar-box">
+                    <div class="bio text-center">
+                        <img src="/{% if user.profile.image_cropped %}{{ user.profile.image_cropped.url }} {% else %}static/images/users/default-user-image.jpg{% endif %}"
+                             alt="Image Placeholder" class="img-fluid">
+                        <div class="text-info">{{ status }}</div>
+                        <div class="row bio-body">
+                            <div class="col-md-12">
+                                <form action="" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% for field in form %}
+                                        <div class="form-group">
+                                            {% if not field.is_hidden %}
+                                                {{ field.label }}
+                                            {% endif %}
+                                            {{ field }}
+                                            <div class="text-danger">
+                                                {{ field.errors }}</div>
+                                        </div>
+                                    {% endfor %}
+                                    <input type="submit" class="btn btn-sm btn-primary" value="Save">
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {% if user.profile.likes.count %}
+                        <div class="row mx-0 bio mt-5" id="favorite_posts">
+
+
+                        </div>
+                    {% endif %}
+                    {% if user.profile.posts.count %}
+                        <div class="row mx-0 bio mt-5" id="my_posts">
+
+                        </div>
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $('#user-info').hide();
+    </script>
+    <script type="text/javascript">
+        {% if user.profile.likes.count %}
+            $('#favorite_posts').load('{% url 'user_favorite_posts' page=1 %}');
+
+            function loadFavoritePosts(a) {
+                $('#favorite_posts').load(a.href);
+            }
+        {% endif %}
+
+
+        {% if user.profile.posts.count %}
+            $('#my_posts').load('{% url 'user_posts' page=1 %}');
+            function loadMyPosts(a) {
+                $('#my_posts').load(a.href);
+            }
+        {% endif %}
+
+    </script>
+{% endblock %}

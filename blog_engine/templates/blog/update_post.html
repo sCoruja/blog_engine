@@ -1,0 +1,29 @@
+{% extends 'blog/base.html' %}
+{% load staticfiles %}
+{% block main_content_header %}
+    <div class="col-md-6">
+        <h2 class="mb-4 mt-3">Update post</h2>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="col-md-12 col-lg-8 main-content">
+        <form action="{% url 'update_post' slug %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+            <div class="row">
+                {% for field in form %}
+                    <div class="col-md-12 form-group">
+                        {% if not field.is_hidden %}
+                            {{ field.label }}
+                        {% endif %}
+                        {{ field }}
+                    </div>
+                {% endfor %}
+
+                <div class="col-md-6 form-group">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+
+    </div>
+{% endblock %}

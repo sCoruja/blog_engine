@@ -1,0 +1,102 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="col-md-12 col-lg-8 main-content mt-5">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="sidebar-box">
+                    <div class="bio text-center">
+                        <img src="/{% if user.profile.image_cropped %}{{ user.profile.image_cropped.url }} {% else %}static/images/users/default-user-image.jpg{% endif %}"
+                             alt="Image Placeholder" class="img-fluid">
+                        <div class="text-info">{{ status }}</div>
+                        <div class="row bio-body">
+                            <div class="col-md-12">
+                                <h3>{{ user.profile.full_name }}</h3>
+                                <p><b>Joined at:</b> {{ user.date_joined }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if user.profile.posts.count %}
+
+                        <div class="row mx-0 bio mt-5">
+                            <div class="row mt-3">
+                                <div class="col-md-12 mb-3">
+                                    <h3>User's Posts ({{ user.profile.posts.count }})</h3>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        {% for post in posts.object_list %}
+
+                                            <div class="col-md-12 my-3">
+                                                <div class="post-entry-horzontal">
+                                                    <a href="{{ post.get_absolute_url }}">
+                                                        <div class="image"
+                                                             style="background-image: url(/{% if post.cover_small %}{{ post.cover_small.url }}{% endif %});"></div>
+                                                        <span class="text">
+                                                <div class="post-meta">
+                                                    <span class="author mr-2"><b>{{ post.author }}</b></span>
+                                                    <span class="mr-2">{{ post.date }} </span> &bullet;
+                                                    <span class="ml-2"><span
+                                                            class="fa fa-comments"></span> {{ post.comments.count }}</span>
+                                                </div>
+                                                <h2>{{ post.title }}</h2>
+                                            </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+
+
+                                        {% if posts.paginator.num_pages > 1 %}
+                                            <div class="col-md-12 text-center">
+                                                <nav aria-label="Page navigation" class="text-center">
+                                                    <ul class="pagination">
+                                                        <li class="page-item "><a class="page-link"
+                                                                                  href="{% url 'user_account' username=user.username page=1 %}">&lt;</a>
+                                                        </li>
+
+                                                        {% if posts.has_previous %}
+                                                            <li class="page-item ">
+                                                                <a class="page-link"
+                                                                   href="{% url 'user_account' username=user.username page=posts.previous_page_number %}">
+                                                                    {{ posts.previous_page_number }}
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        <li class="page-item active"><a
+                                                                class="page-link">{{ posts.number }}</a></li>
+                                                        {% if posts.has_next %}
+                                                            <li class="page-item ">
+                                                                <a class="page-link"
+                                                                   href="{% url 'user_account' username=user.username page=posts.next_page_number %}">
+                                                                    {{ posts.next_page_number }}
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                        <li class="page-item"><a class="page-link"
+                                                                                 href="{% url 'user_account' username=user.username page=posts.paginator.num_pages %}">&gt;</a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
